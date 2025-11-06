@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café & Délices - Redirection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 3rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 {
+            margin: 0 0 1rem 0;
+            font-size: 2.5rem;
+        }
+        p {
+            margin: 1rem 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .coffee {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            background: #8B4513;
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 1rem;
+        }
+        .btn:hover {
+            background: #A0522D;
+            transform: translateY(-2px);
+        }
+    </style>
+    <script>
+        // Redirection automatique après 3 secondes
+        setTimeout(() => {
+            window.location.href = '/cafe-patisserie/';
+        }, 3000);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="coffee">☕</div>
+        <h1>Café & Délices</h1>
+        <p>Redirection vers notre site...</p>
+        <p>Si la redirection ne fonctionne pas :</p>
+        <a href="/cafe-patisserie/" class="btn">Accéder au Site</a>
+    </div>
+</body>
+</html>

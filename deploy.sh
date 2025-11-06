@@ -34,6 +34,12 @@ npm ci --silent || npm install --silent
 echo "🔨 Building the project..."
 npm run build:static --silent
 
+# Copy .htaccess for client-side routing
+if [ -f "client/public/.htaccess" ]; then
+  cp client/public/.htaccess "$BUILD_FOLDER/.htaccess"
+  echo "✅ .htaccess copied for client-side routing"
+fi
+
 if [ ! -d "$BUILD_FOLDER" ]; then
   echo "❌ Build folder $BUILD_FOLDER not found"
   exit 1
