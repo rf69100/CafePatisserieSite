@@ -7,11 +7,12 @@ export function Navbar() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const BASE = "/cafe-patisserie";
   const navItems = [
-    { path: "/", label: "Accueil" },
-    { path: "/produits", label: "Produits" },
-    { path: "/a-propos", label: "À Propos" },
-    { path: "/contact", label: "Contact" },
+    { path: `${BASE}/`, label: "Accueil" },
+    { path: `${BASE}/produits`, label: "Produits" },
+    { path: `${BASE}/a-propos`, label: "À Propos" },
+    { path: `${BASE}/contact`, label: "Contact" },
   ];
 
   const isActive = (path: string) => location === path;
@@ -20,7 +21,7 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover-elevate active-elevate-2 rounded-md px-2 py-1 -ml-2">
+          <Link href={`${BASE}/`} className="flex items-center gap-2 hover-elevate active-elevate-2 rounded-md px-2 py-1 -ml-2">
             <Coffee className="h-7 w-7 text-primary" />
             <span className="font-serif text-2xl font-bold text-foreground">Café & Délices</span>
           </Link>
