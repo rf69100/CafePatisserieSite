@@ -23,8 +23,8 @@ if [[ -z "$FTP_USER" || -z "$FTP_PASS" ]]; then
   exit 1
 fi
 
-echo "☕ Building Café Pâtisserie Website (relative paths for subdirectory)..."
-export VITE_BASE="./"
+echo "☕ Building Café Pâtisserie Website (permanent subdirectory /cafe-patisserie/)..."
+export VITE_BASE="/cafe-patisserie/"
 
 # Install dependencies
 echo "📦 Installing dependencies..."
