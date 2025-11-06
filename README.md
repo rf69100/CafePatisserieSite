@@ -1,10 +1,163 @@
-# Café & Délices - Site Vitrine React
+# ☕ Café Pâtisserie - Site Web
 
-Un site vitrine moderne et élégant pour une boutique fictive de café et pâtisseries artisanales. Ce projet démontre des compétences en développement React, design responsive, et organisation de projet professionnel.
+Site web moderne pour café-pâtisserie développé avec React, TypeScript et Express.
 
-![Preview](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+## 🚀 Déploiement sur VPS avec MariaDB
+
+### Prérequis
+- Node.js 18+ installé
+- MariaDB/MySQL installé et configuré
+- Git installé
+
+### 🔧 Configuration de la base de données
+
+1. **Connexion à MariaDB :**
+```bash
+sudo mysql -u root -p
+```
+
+2. **Création de la base de données :**
+```sql
+CREATE DATABASE cafe_patisserie;
+CREATE USER 'cafe_user'@'localhost' IDENTIFIED BY 'votre_mot_de_passe_fort';
+GRANT ALL PRIVILEGES ON cafe_patisserie.* TO 'cafe_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+### 📦 Installation
+
+1. **Cloner le projet :**
+```bash
+git clone <votre-repo>
+cd CafePatisserieSite
+```
+
+2. **Installer les dépendances :**
+```bash
+npm install
+```
+
+3. **Configuration des variables d'environnement :**
+```bash
+cp .env.example .env
+nano .env
+```
+
+Modifiez le fichier `.env` avec vos vraies informations :
+```env
+DATABASE_URL="mysql://cafe_user:votre_mot_de_passe_fort@localhost:3306/cafe_patisserie"
+NODE_ENV=production
+PORT=3000
+SESSION_SECRET="votre-clé-secrète-très-longue-et-aléatoire"
+```
+
+4. **Migration de la base de données :**
+```bash
+npm run db:push
+```
+
+5. **Initialisation avec des données de démonstration :**
+```bash
+npm run db:seed
+```
+
+6. **Build de l'application :**
+```bash
+npm run build
+```
+
+### 🚀 Démarrage
+
+**Mode développement :**
+```bash
+npm run dev
+```
+
+**Mode production :**
+```bash
+npm start
+```
+
+### 🔄 Déploiement automatique avec PM2
+
+1. **Installation de PM2 :**
+```bash
+sudo npm install -g pm2
+```
+
+2. **Démarrage avec PM2 :**
+```bash
+pm2 start dist/index.js --name cafe-patisserie
+pm2 startup
+pm2 save
+```
+
+3. **Gestion avec PM2 :**
+```bash
+pm2 status           # Voir le status
+pm2 logs cafe-patisserie  # Voir les logs
+pm2 restart cafe-patisserie  # Redémarrer
+pm2 stop cafe-patisserie     # Arrêter
+```
+
+### 🌐 Configuration Nginx (optionnel)
+
+Créez un fichier de configuration Nginx :
+```nginx
+server {
+    listen 80;
+    server_name votre-domaine.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### 🔒 Sécurité
+
+- Changez les mots de passe par défaut
+- Configurez un firewall (ufw)
+- Utilisez HTTPS avec Let's Encrypt
+- Gardez votre système à jour
+
+### 📊 Structure de la base de données
+
+- **users** : Gestion des utilisateurs
+- **products** : Catalogue des produits (cafés & pâtisseries)
+
+### 🛠️ Scripts disponibles
+
+- `npm run dev` : Démarrage en mode développement
+- `npm run build` : Build de production
+- `npm start` : Démarrage en production
+- `npm run db:generate` : Génère les migrations
+- `npm run db:push` : Applique les migrations
+- `npm run db:seed` : Initialise avec des données de démonstration
+
+### 🆘 Dépannage
+
+**Erreur de connexion à la base :**
+- Vérifiez que MariaDB est démarré : `sudo systemctl status mariadb`
+- Vérifiez les credentials dans `.env`
+- Testez la connexion : `mysql -u cafe_user -p cafe_patisserie`
+
+**Port déjà utilisé :**
+- Changez le PORT dans `.env`
+- Ou arrêtez le processus : `sudo lsof -ti:3000 | xargs sudo kill -9`
+
+---
+
+🎉 Votre site de café-pâtisserie est maintenant prêt à servir vos clients en ligne !
 
 ## 📋 Table des Matières
 

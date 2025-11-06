@@ -1,8 +1,8 @@
-import { Product } from "@shared/schema";
+import { ClientProduct } from "@shared/schema";
 import { Card } from "@/components/ui/card";
 
 interface ProductCardProps {
-  product: Product;
+  product: ClientProduct;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -24,7 +24,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
           <span className="font-semibold text-primary text-lg whitespace-nowrap" data-testid={`text-product-price-${product.id}`}>
-            {product.price.toFixed(2)} €
+            {product.price} €
           </span>
         </div>
         <p className="text-sm text-muted-foreground line-clamp-2" data-testid={`text-product-description-${product.id}`}>
