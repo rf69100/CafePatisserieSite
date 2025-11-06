@@ -24,7 +24,7 @@ if [[ -z "$FTP_USER" || -z "$FTP_PASS" ]]; then
 fi
 
 echo "☕ Building Café Pâtisserie Website (permanent subdirectory /cafe-patisserie/)..."
-export VITE_BASE="/cafe-patisserie/"
+export VITE_BASE="www.ryanfonseca.fr/cafe-patisserie/"
 
 # Install dependencies
 echo "📦 Installing dependencies..."
