@@ -20,20 +20,26 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Liens Rapides</h3>
             <nav className="flex flex-col gap-2">
-              <Link href="/produits">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="link-footer-produits">
-                  Produits
-                </a>
+              <Link 
+                href="/produits" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors" 
+                data-testid="link-footer-produits"
+              >
+                Produits
               </Link>
-              <Link href="/a-propos">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="link-footer-apropos">
-                  À Propos
-                </a>
+              <Link 
+                href="/a-propos" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors" 
+                data-testid="link-footer-apropos"
+              >
+                À Propos
               </Link>
-              <Link href="/contact">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="link-footer-contact">
-                  Contact
-                </a>
+              <Link 
+                href="/contact" 
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors" 
+                data-testid="link-footer-contact"
+              >
+                Contact
               </Link>
             </nav>
           </div>

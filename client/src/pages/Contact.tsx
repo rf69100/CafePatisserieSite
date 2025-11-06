@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, MapPin, Phone, CheckCircle } from "lucide-react";
+import { Mail, MapPin, Phone, CheckCircle, X } from "lucide-react";
 import { useState } from "react";
 
 export default function Contact() {
@@ -24,7 +24,6 @@ export default function Contact() {
     console.log("Form submitted:", data);
     setSubmitted(true);
     form.reset();
-    setTimeout(() => setSubmitted(false), 5000);
   };
 
   return (
@@ -42,11 +41,26 @@ export default function Contact() {
         <div className="grid lg:grid-cols-5 gap-12">
           <div className="lg:col-span-3 space-y-6">
             {submitted && (
-              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div 
+                className="bg-primary/10 border border-primary/20 rounded-lg p-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300"
+                data-testid="success-message"
+                role="status"
+                aria-live="polite"
+              >
                 <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                <p className="text-sm font-medium">
+                <p className="text-sm font-medium flex-1">
                   Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.
                 </p>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 flex-shrink-0"
+                  onClick={() => setSubmitted(false)}
+                  data-testid="button-close-success"
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Fermer</span>
+                </Button>
               </div>
             )}
 
