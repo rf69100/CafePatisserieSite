@@ -27,7 +27,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Router base="/cafe-patisserie">
+        <Router base="www.ryanfonseca.fr/cafe-patisserie">
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-1">
