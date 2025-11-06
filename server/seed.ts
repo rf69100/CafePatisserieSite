@@ -1,5 +1,9 @@
+import { config } from "dotenv";
 import { db } from "./db";
 import { products } from "@shared/schema";
+
+// Charger les variables d'environnement
+config();
 
 const sampleProducts = [
   {

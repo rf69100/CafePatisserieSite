@@ -47,6 +47,10 @@ Thumbs.db
 # VS Code
 .vscode/
 
+# Replit (nettoyé)
+.replit
+replit.md
+
 # Temporary files
 tmp/
 temp/

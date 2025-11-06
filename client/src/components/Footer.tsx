@@ -1,5 +1,4 @@
-import { Coffee } from "lucide-react";
-import { SiInstagram, SiFacebook } from "react-icons/si";
+import { Coffee, Instagram, Facebook } from "lucide-react";
 import { Link } from "wouter";
 
 export function Footer() {
@@ -54,7 +53,7 @@ export function Footer() {
                 className="hover-elevate active-elevate-2 rounded-md p-2"
                 data-testid="link-instagram"
               >
-                <SiInstagram className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+                <Instagram className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
                 <span className="sr-only">Instagram</span>
               </a>
               <a
@@ -64,7 +63,7 @@ export function Footer() {
                 className="hover-elevate active-elevate-2 rounded-md p-2"
                 data-testid="link-facebook"
               >
-                <SiFacebook className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+                <Facebook className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
                 <span className="sr-only">Facebook</span>
               </a>
             </div>
