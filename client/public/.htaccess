@@ -1,15 +1,15 @@
-# Redirection pour React Router / Wouter
+# Redirection pour React Router / Wouter dans un sous-dossier
 # Toutes les routes doivent pointer vers index.html pour le routage côté client
 
 RewriteEngine On
 
-# Handle Angular and React Router
+# Handle React Router in subdirectory
 # If an existing asset or directory is requested, serve it as-is
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Otherwise, serve index.html
-RewriteRule . /index.html [L]
+# Otherwise, serve index.html (relative to current directory)
+RewriteRule . index.html [L]
 
 # Cache des assets statiques
 <IfModule mod_expires.c>
