@@ -1,7 +1,9 @@
 # Configuration pour React Router dans le sous-dossier /cafe-patisserie/
 # Toutes les routes doivent pointer vers index.html
 
+
 RewriteEngine On
+RewriteBase /cafe-patisserie/
 
 # Handle React Router in /cafe-patisserie/ subdirectory
 # If an existing asset or directory is requested, serve it as-is
