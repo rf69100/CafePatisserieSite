@@ -14,10 +14,10 @@ import NotFound from "@/pages/not-found";
 function AppRouter() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/produits" component={Products} />
-      <Route path="/a-propos" component={About} />
-      <Route path="/contact" component={Contact} />
+      <Route path="/cafe-patisserie/" component={Home} />
+      <Route path="/cafe-patisserie/produits" component={Products} />
+      <Route path="/cafe-patisserie/a-propos" component={About} />
+      <Route path="/cafe-patisserie/contact" component={Contact} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -27,7 +27,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Router base="www.ryanfonseca.fr/cafe-patisserie">
+        <Router base="/cafe-patisserie">
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-1">
