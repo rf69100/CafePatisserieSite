@@ -16,7 +16,7 @@ FTP_USER="${FTP_USER-ryanfoc}"
 FTP_PASS="${FTP_PASS-Bpi14580911}"
 FTP_HOST="${FTP_HOST-ftp.cluster021.hosting.ovh.net}"
 REMOTE_FOLDER="${REMOTE_FOLDER-cafe-patisserie}"
-BUILD_FOLDER="dist"
+BUILD_FOLDER="dist/public"
 
 if [[ -z "$FTP_USER" || -z "$FTP_PASS" ]]; then
   echo "� FTP credentials missing. Create .deploy.env or set FTP_USER and FTP_PASS."
@@ -32,7 +32,7 @@ npm ci --silent || npm install --silent
 
 # Build the project
 echo "🔨 Building the project..."
-npm run build --silent
+npm run build:static --silent
 
 if [ ! -d "$BUILD_FOLDER" ]; then
   echo "❌ Build folder $BUILD_FOLDER not found"
