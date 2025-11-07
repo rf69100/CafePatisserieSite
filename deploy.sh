@@ -198,16 +198,14 @@ deploy_project() {
 # Tableau pour stocker les résultats de test d'URL
 declare -A DEPLOY_RESULTS
 
+
 for ((i=0; i<${#PROJECT_LIST[@]}; i++)); do
   entry="${PROJECT_LIST[$i]}"
   [[ -z "$entry" || "${entry:0:1}" == "#" ]] && continue
   IFS=':' read -r project_name project_path remote_folder build_folder <<<"$entry"
   echo "🔄 Déploiement du projet $((i+1))/${#PROJECT_LIST[@]} : $project_name"
-  if git_pull_and_check_changes "$project_path"; then
-    deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
-  else
-    echo "⏭️  Aucun changement détecté pour $project_name, déploiement ignoré."
-  fi
+  git_pull_project "$project_path"
+  deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
 
   # Test de l'URL publique après déploiement
   URL="https://www.ryanfonseca.fr/$remote_folder/"
