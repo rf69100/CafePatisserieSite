@@ -1,3 +1,15 @@
+git_pull_project() {
+  local project_path="$1"
+  echo "🔄 [GIT] Mise à jour du projet dans $project_path ..."
+  if [ -d "$project_path/.git" ]; then
+    pushd "$project_path" >/dev/null
+    git pull --rebase --autostash || git pull
+    popd >/dev/null
+    echo "✅ [GIT] Projet mis à jour."
+  else
+    echo "⚠️ [GIT] Pas de repo git dans $project_path, pull ignoré."
+  fi
+}
 #!/usr/bin/env bash
 
 set -euo pipefail
@@ -10,12 +22,27 @@ FTP_PASS="Bpi14580911"
 FTP_HOST="${FTP_HOST-ftp.cluster021.hosting.ovh.net}"
 
 
-# Load environment if present
+
+# Chargement des variables d'environnement si le fichier existe
 if [ -f ".deploy.env" ]; then
   set -a
   . <(grep -v '^\s*#' .deploy.env | sed '/^\s*$/d') 2>/dev/null || true
   set +a
 fi
+
+# Fonction : Met à jour le projet local avec git pull
+git_pull_project() {
+  local project_path="$1"
+  echo "🔄 [GIT] Mise à jour du projet dans $project_path ..."
+  if [ -d "$project_path/.git" ]; then
+    pushd "$project_path" >/dev/null
+    git pull --rebase --autostash || git pull
+    popd >/dev/null
+    echo "✅ [GIT] Projet mis à jour dans $project_path."
+  else
+    echo "⚠️ [GIT] Pas de repo git dans $project_path, pull ignoré."
+  fi
+}
 
 PROJECT_LIST=(
   "Portfolio:/var/www/html/websites/react/mon-portfolio::build"
@@ -34,6 +61,8 @@ echo "☕ Building Café Pâtisserie Website (permanent subdirectory /cafe-patis
 export VITE_BASE="/cafe-patisserie/"
 
 
+
+# Fonction : Déploie le projet (build, vérification, upload FTP)
 deploy_project() {
     local project_name="$1"
     local project_path="$2"
@@ -61,14 +90,14 @@ deploy_project() {
       fi
     fi
 
-    # Copy .htaccess for client-side routing and ensure it's present (only for Vite/SPA)
+    # Copie .htaccess pour le routage client (Vite/SPA uniquement)
     if [ -f "client/public/.htaccess" ]; then
       cp client/public/.htaccess "$build_folder/.htaccess"
-      echo "✅ [$project_name] .htaccess copied for client-side routing"
+      echo "✅ [$project_name] .htaccess copié pour le routage client"
     fi
 
     if [ ! -d "$build_folder" ]; then
-      echo "❌ [$project_name] Build folder $build_folder not found"
+      echo "❌ [$project_name] Dossier de build $build_folder introuvable"
       ls -la
       popd >/dev/null
       return 1
@@ -76,57 +105,57 @@ deploy_project() {
 
     echo "🔎 [$project_name] Vérification des fichiers de build..."
     if [ -f "$build_folder/index.html" ]; then
-      echo "✅ [$project_name] index.html found"
+      echo "✅ [$project_name] index.html trouvé"
       if grep -q "./assets/" $build_folder/index.html; then
-        echo "✅ [$project_name] index.html references ./assets/"
+        echo "✅ [$project_name] index.html référence ./assets/"
       else
-        echo "⚠️ [$project_name] index.html does not reference ./assets/ - inspect $build_folder/index.html"
+        echo "⚠️ [$project_name] index.html ne référence pas ./assets/ - inspecte $build_folder/index.html"
       fi
     else
-      echo "❌ [$project_name] index.html not found in $build_folder"
+      echo "❌ [$project_name] index.html introuvable dans $build_folder"
       popd >/dev/null
       return 1
     fi
 
-    # Check for JS assets (only for Vite/SPA)
+    # Vérification JS assets (Vite/SPA)
     jsfile=$(ls $build_folder/assets/*.js 2>/dev/null | head -n1 || true)
     if [ -z "$jsfile" ]; then
-      echo "⚠️ [$project_name] No JS asset found in $build_folder/assets (normal for CRA)"
+      echo "⚠️ [$project_name] Aucun JS asset dans $build_folder/assets (normal pour CRA)"
     else
-      echo "✅ [$project_name] JS assets found: $(basename $jsfile)"
+      echo "✅ [$project_name] JS asset trouvé : $(basename $jsfile)"
     fi
 
-    # Check for CSS assets
+    # Vérification CSS assets
     cssfile=$(ls $build_folder/assets/*.css 2>/dev/null | head -n1 || true)
     if [ -z "$cssfile" ]; then
-      echo "⚠️ [$project_name] No CSS asset found in $build_folder/assets (normal for CRA)"
+      echo "⚠️ [$project_name] Aucun CSS asset dans $build_folder/assets (normal pour CRA)"
     else
-      echo "✅ [$project_name] CSS assets found: $(basename $cssfile)"
+      echo "✅ [$project_name] CSS asset trouvé : $(basename $cssfile)"
     fi
 
-    echo "📤 [$project_name] Uploading $build_folder to FTP /www/$remote_folder/ ..."
+    echo "📤 [$project_name] Upload FTP de $build_folder vers /www/$remote_folder/ ..."
     lftp -c "open -u '$FTP_USER','$FTP_PASS' $FTP_HOST; mkdir -p /www/$remote_folder; cd /www/$remote_folder; mirror -R --delete --verbose $build_folder/ .; quit"
 
-    echo "🧪 [$project_name] Testing public URL..."
+    echo "🧪 [$project_name] Test de l'URL publique..."
     URL="https://www.ryanfonseca.fr/$remote_folder/"
     if curl --silent --head --fail "$URL" >/dev/null 2>&1; then
-      echo "✅ [$project_name] Public URL reachable: $URL"
+      echo "✅ [$project_name] URL publique accessible : $URL"
     else
-      echo "❌ [$project_name] Public URL not reachable: $URL (this might be normal if the site takes time to propagate)"
+      echo "❌ [$project_name] URL publique inaccessible : $URL (propagation possible)"
     fi
 
-    echo "� [$project_name] Asset check (public)..."
-    echo "Main page headers:"
-    curl -I -sS "$URL" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch main page headers"
+    echo "� [$project_name] Vérification des assets (public)..."
+    echo "Headers de la page principale :"
+    curl -I -sS "$URL" 2>/dev/null | sed -n '1,10p' || echo "Impossible de récupérer les headers"
 
     if [ -n "$jsfile" ]; then
-      echo "JS asset headers:"
-      curl -I -sS "${URL}assets/$(basename $jsfile)" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch JS asset headers"
+      echo "Headers JS asset :"
+      curl -I -sS "${URL}assets/$(basename $jsfile)" 2>/dev/null | sed -n '1,10p' || echo "Impossible de récupérer les headers JS"
     fi
 
     if [ -n "$cssfile" ]; then
-      echo "CSS asset headers:"
-      curl -I -sS "${URL}assets/$(basename $cssfile)" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch CSS asset headers"
+      echo "Headers CSS asset :"
+      curl -I -sS "${URL}assets/$(basename $cssfile)" 2>/dev/null | sed -n '1,10p' || echo "Impossible de récupérer les headers CSS"
     fi
 
     echo ""
@@ -142,5 +171,6 @@ for ((i=0; i<${#PROJECT_LIST[@]}; i++)); do
   [[ -z "$entry" || "${entry:0:1}" == "#" ]] && continue
   IFS=':' read -r project_name project_path remote_folder build_folder <<<"$entry"
   echo "🔄 Déploiement du projet $((i+1))/${#PROJECT_LIST[@]} : $project_name"
+  git_pull_project "$project_path"
   deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
 done
