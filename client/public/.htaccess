@@ -11,7 +11,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
 # Otherwise, serve index.html from the current directory
-RewriteRule . /cafe-patisserie/index.html [L]
+RewriteRule ^ index.html [QSA,L]
 
 # Cache des assets statiques
 <IfModule mod_expires.c>

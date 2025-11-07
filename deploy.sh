@@ -24,7 +24,7 @@ if [[ -z "$FTP_USER" || -z "$FTP_PASS" ]]; then
 fi
 
 echo "☕ Building Café Pâtisserie Website (permanent subdirectory /cafe-patisserie/)..."
-export VITE_BASE="./"
+export VITE_BASE="/cafe-patisserie/"
 
 # Install dependencies
 echo "📦 Installing dependencies..."
@@ -34,10 +34,16 @@ npm ci --silent || npm install --silent
 echo "🔨 Building the project..."
 npm run build:static --silent
 
-# Copy .htaccess for client-side routing
+
+# Copy .htaccess for client-side routing and ensure it's present
 if [ -f "client/public/.htaccess" ]; then
   cp client/public/.htaccess "$BUILD_FOLDER/.htaccess"
   echo "✅ .htaccess copied for client-side routing"
+fi
+
+if [ ! -f "$BUILD_FOLDER/.htaccess" ]; then
+  echo "❌ .htaccess missing in $BUILD_FOLDER. SPA routing will break!"
+  exit 1
 fi
 
 if [ ! -d "$BUILD_FOLDER" ]; then
