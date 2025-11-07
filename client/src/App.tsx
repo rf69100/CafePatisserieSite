@@ -9,6 +9,8 @@ import Home from "@/pages/Home";
 import Products from "@/pages/Products";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
+import Legal from "@/pages/Legal";
+import Privacy from "@/pages/Privacy";
 import NotFound from "@/pages/not-found";
 
 function AppRouter() {
@@ -18,6 +20,8 @@ function AppRouter() {
       <Route path="/cafe-patisserie/produits" component={Products} />
       <Route path="/cafe-patisserie/a-propos" component={About} />
       <Route path="/cafe-patisserie/contact" component={Contact} />
+      <Route path="/cafe-patisserie/legal" component={Legal} />
+      <Route path="/cafe-patisserie/privacy" component={Privacy} />
       <Route component={NotFound} />
     </Switch>
   );

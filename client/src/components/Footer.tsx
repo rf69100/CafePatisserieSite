@@ -75,13 +75,13 @@ export function Footer() {
             <p className="text-sm text-muted-foreground">
               © 2024 Café & Délices. Tous droits réservés.
             </p>
-            <div className="flex gap-6">
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Mentions Légales
-              </a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Politique de Confidentialité
-              </a>
+              <div className="flex gap-6">
+                <Link href="/cafe-patisserie/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Mentions Légales
+                </Link>
+                <Link href="/cafe-patisserie/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Politique de Confidentialité
+                </Link>
             </div>
           </div>
         </div>
