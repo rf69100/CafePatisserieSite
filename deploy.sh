@@ -79,7 +79,7 @@ echo "📤 Uploading $BUILD_FOLDER to FTP /www/$REMOTE_FOLDER/ ..."
 lftp -c "open -u '$FTP_USER','$FTP_PASS' $FTP_HOST; mkdir -p /www/$REMOTE_FOLDER; cd /www/$REMOTE_FOLDER; mirror -R --delete --verbose $BUILD_FOLDER/ .; quit"
 
 echo "🧪 Testing public URL..."
-URL="https://ryanfonseca.fr/$REMOTE_FOLDER/"
+URL="https://www.ryanfonseca.fr/$REMOTE_FOLDER/"
 if curl --silent --head --fail "$URL" >/dev/null 2>&1; then
   echo "✅ Public URL reachable: $URL"
 else

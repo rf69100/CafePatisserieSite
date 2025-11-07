@@ -22,7 +22,7 @@ export default function Home() {
             Découvrez notre sélection de cafés artisanaux et pâtisseries fraîches, 
             préparés avec passion chaque jour
           </p>
-          <Link href="/produits">
+          <Link href="/cafe-patisserie/produits">
             <Button
               size="lg"
               variant="default"

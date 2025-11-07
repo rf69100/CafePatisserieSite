@@ -20,21 +20,21 @@ export function Footer() {
             <h3 className="font-semibold text-lg">Liens Rapides</h3>
             <nav className="flex flex-col gap-2">
               <Link 
-                href="/produits" 
+                href="/cafe-patisserie/produits" 
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors" 
                 data-testid="link-footer-produits"
               >
                 Produits
               </Link>
               <Link 
-                href="/a-propos" 
+                href="/cafe-patisserie/a-propos" 
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors" 
                 data-testid="link-footer-apropos"
               >
                 À Propos
               </Link>
               <Link 
-                href="/contact" 
+                href="/cafe-patisserie/contact" 
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors" 
                 data-testid="link-footer-contact"
               >
