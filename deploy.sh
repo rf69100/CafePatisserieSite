@@ -18,7 +18,7 @@ if [ -f ".deploy.env" ]; then
 fi
 
 PROJECT_LIST=(
-  # Format: "DisplayName:local_path:remote_folder:build_folder"
+  "DisplayName:local_path:remote_folder:build_folder"
   # Only deploy CafePatisserieSite for now
   "Café Pâtisserie:/var/www/html/websites/react/CafePatisserieSite:cafe-patisserie:dist/public"
   # "Portfolio:/var/www/html/websites/react/mon-portfolio::build"
