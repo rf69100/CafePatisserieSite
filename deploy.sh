@@ -62,7 +62,7 @@ git_pull_and_check_changes() {
 
 PROJECT_LIST=(
   "Portfolio:/var/www/html/websites/react/mon-portfolio::build"
-  "NBA Dashboard:/var/www/html/websites/react/nba-dashbord:nba_dashboard:dist"
+  "NBA Dashboard:/var/www/html/websites/react/nba-dashbord:nba_dashboard:build"
   "Spotify Album Finder:/var/www/html/websites/react/album_finder_spotify:spotify-finder:dist"
   "F1 Strategy Simulator:/var/www/html/websites/react/f1-strategy-simulator:f1-simulator:dist"
   "Café Pâtisserie:/var/www/html/websites/react/CafePatisserieSite:cafe-patisserie:dist/public"
