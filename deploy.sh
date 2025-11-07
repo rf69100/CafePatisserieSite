@@ -35,14 +35,20 @@ fi
 echo "☕ Building Café Pâtisserie Website (permanent subdirectory /cafe-patisserie/)..."
 export VITE_BASE="/cafe-patisserie/"
 
-# Install dependencies
-echo "📦 Installing dependencies..."
-npm ci --silent || npm install --silent
 
-# Build the project
-echo "🔨 Building the project..."
-npm run build:static --silent
+deploy_project() {
+    local project_name="$1"
+    local project_path="$2"
+    local remote_folder="$3"
+    local build_folder="$4"
 
+    pushd "$project_path" >/dev/null || { echo "❌ Erreur: Impossible d'accéder à $project_path"; return 2; }
+
+    echo "📦 Installing dependencies..."
+    npm ci --silent || npm install --silent
+
+    echo "🔨 Building the project..."
+    npm run build:static --silent
 
     # Copy .htaccess for client-side routing and ensure it's present
     if [ -f "client/public/.htaccess" ]; then
@@ -124,3 +130,12 @@ npm run build:static --silent
     echo "✅ Café Pâtisserie deployment completed!"
     echo "🌐 Your website should be available at: $URL"
     echo "☕ Enjoy your beautiful café website!"
+    popd >/dev/null
+    return 0
+}
+
+# Loop over PROJECT_LIST and deploy
+for entry in "${PROJECT_LIST[@]:1}"; do
+    IFS=':' read -r project_name project_path remote_folder build_folder <<<"$entry"
+    deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
+done
