@@ -40,77 +40,82 @@ deploy_project() {
     local remote_folder="$3"
     local build_folder="$4"
 
+    echo "\n=============================="
+    echo "🚀 Déploiement du projet : $project_name"
+    echo "Chemin local : $project_path"
+    echo "Dossier de build : $build_folder"
+    echo "Dossier distant : $remote_folder"
+    echo "=============================="
+
     pushd "$project_path" >/dev/null || { echo "❌ Erreur: Impossible d'accéder à $project_path"; return 2; }
 
-    echo "📦 Installing dependencies..."
+    echo "📦 [$project_name] Installation des dépendances..."
     npm ci --silent || npm install --silent
 
-    echo "🔨 Building the project..."
-    npm run build:static --silent
-
-    # Copy .htaccess for client-side routing and ensure it's present
-    if [ -f "client/public/.htaccess" ]; then
-      cp client/public/.htaccess "$build_folder/.htaccess"
-      echo "✅ .htaccess copied for client-side routing"
+    echo "🔨 [$project_name] Build du projet..."
+    if [ -f package.json ]; then
+      if grep -q '"build:static"' package.json; then
+        npm run build:static --silent
+      else
+        npm run build --silent
+      fi
     fi
 
-    if [ ! -f "$build_folder/.htaccess" ]; then
-      echo "❌ .htaccess missing in $build_folder. SPA routing will break!"
-      popd >/dev/null
-      return 1
+    # Copy .htaccess for client-side routing and ensure it's present (only for Vite/SPA)
+    if [ -f "client/public/.htaccess" ]; then
+      cp client/public/.htaccess "$build_folder/.htaccess"
+      echo "✅ [$project_name] .htaccess copied for client-side routing"
     fi
 
     if [ ! -d "$build_folder" ]; then
-      echo "❌ Build folder $build_folder not found"
+      echo "❌ [$project_name] Build folder $build_folder not found"
       ls -la
       popd >/dev/null
       return 1
     fi
 
-    echo "🔎 Quick verification of build files..."
+    echo "🔎 [$project_name] Vérification des fichiers de build..."
     if [ -f "$build_folder/index.html" ]; then
-      echo "✅ index.html found"
+      echo "✅ [$project_name] index.html found"
       if grep -q "./assets/" $build_folder/index.html; then
-        echo "✅ index.html references ./assets/"
+        echo "✅ [$project_name] index.html references ./assets/"
       else
-        echo "⚠️ index.html does not reference ./assets/ - inspect $build_folder/index.html"
+        echo "⚠️ [$project_name] index.html does not reference ./assets/ - inspect $build_folder/index.html"
       fi
     else
-      echo "❌ index.html not found in $build_folder"
+      echo "❌ [$project_name] index.html not found in $build_folder"
       popd >/dev/null
       return 1
     fi
 
-    # Check for JS assets
+    # Check for JS assets (only for Vite/SPA)
     jsfile=$(ls $build_folder/assets/*.js 2>/dev/null | head -n1 || true)
     if [ -z "$jsfile" ]; then
-      echo "❌ No JS asset found in $build_folder/assets"
-      popd >/dev/null
-      return 1
+      echo "⚠️ [$project_name] No JS asset found in $build_folder/assets (normal for CRA)"
     else
-      echo "✅ JS assets found: $(basename $jsfile)"
+      echo "✅ [$project_name] JS assets found: $(basename $jsfile)"
     fi
 
     # Check for CSS assets
     cssfile=$(ls $build_folder/assets/*.css 2>/dev/null | head -n1 || true)
     if [ -z "$cssfile" ]; then
-      echo "⚠️ No CSS asset found in $build_folder/assets"
+      echo "⚠️ [$project_name] No CSS asset found in $build_folder/assets (normal for CRA)"
     else
-      echo "✅ CSS assets found: $(basename $cssfile)"
+      echo "✅ [$project_name] CSS assets found: $(basename $cssfile)"
     fi
 
-    echo "📤 Uploading $build_folder to FTP /www/$remote_folder/ ..."
+    echo "📤 [$project_name] Uploading $build_folder to FTP /www/$remote_folder/ ..."
     lftp -c "open -u '$FTP_USER','$FTP_PASS' $FTP_HOST; mkdir -p /www/$remote_folder; cd /www/$remote_folder; mirror -R --delete --verbose $build_folder/ .; quit"
 
-    echo "🧪 Testing public URL..."
+    echo "🧪 [$project_name] Testing public URL..."
     URL="https://www.ryanfonseca.fr/$remote_folder/"
     if curl --silent --head --fail "$URL" >/dev/null 2>&1; then
-      echo "✅ Public URL reachable: $URL"
+      echo "✅ [$project_name] Public URL reachable: $URL"
     else
-      echo "❌ Public URL not reachable: $URL (this might be normal if the site takes time to propagate)"
+      echo "❌ [$project_name] Public URL not reachable: $URL (this might be normal if the site takes time to propagate)"
     fi
 
-    echo "� Asset check (public)..."
+    echo "� [$project_name] Asset check (public)..."
     echo "Main page headers:"
     curl -I -sS "$URL" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch main page headers"
 
@@ -125,9 +130,7 @@ deploy_project() {
     fi
 
     echo ""
-    echo "✅ Café Pâtisserie deployment completed!"
-    echo "🌐 Your website should be available at: $URL"
-    echo "☕ Enjoy your beautiful café website!"
+    echo "✅ [$project_name] Déploiement terminé !"
     popd >/dev/null
     return 0
 }
