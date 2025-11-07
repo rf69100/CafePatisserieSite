@@ -30,25 +30,41 @@ if [ -f ".deploy.env" ]; then
   set +a
 fi
 
-# Fonction : Met à jour le projet local avec git pull
-git_pull_project() {
+
+# Fonction : Met à jour le projet local avec git pull et vérifie s'il y a des changements à déployer
+git_pull_and_check_changes() {
   local project_path="$1"
   echo "🔄 [GIT] Mise à jour du projet dans $project_path ..."
   if [ -d "$project_path/.git" ]; then
     pushd "$project_path" >/dev/null
+    git fetch origin
+    local branch_name
+    branch_name=$(git rev-parse --abbrev-ref HEAD)
+    local ahead
+    local behind
+    ahead=$(git rev-list --count HEAD ^origin/$branch_name)
+    behind=$(git rev-list --count origin/$branch_name ^HEAD)
     git pull --rebase --autostash || git pull
     popd >/dev/null
     echo "✅ [GIT] Projet mis à jour dans $project_path."
+    if [ "$ahead" -gt 0 ] || [ "$behind" -gt 0 ]; then
+      echo "🟢 [GIT] Changements détectés pour $project_path (ahead: $ahead, behind: $behind). Déploiement nécessaire."
+      return 0
+    else
+      echo "🟡 [GIT] Aucun changement à déployer pour $project_path."
+      return 1
+    fi
   else
     echo "⚠️ [GIT] Pas de repo git dans $project_path, pull ignoré."
+    return 0
   fi
 }
 
 PROJECT_LIST=(
   "Portfolio:/var/www/html/websites/react/mon-portfolio::build"
-  # "NBA Dashboard:/var/www/html/websites/react/nba-dashbord:nba_dashboard:dist"
-  # "Spotify Album Finder:/var/www/html/websites/react/album_finder_spotify:spotify-finder:dist"
-  # "F1 Strategy Simulator:/var/www/html/websites/react/f1-strategy-simulator:f1-simulator:dist
+  "NBA Dashboard:/var/www/html/websites/react/nba-dashbord:nba_dashboard:dist"
+  "Spotify Album Finder:/var/www/html/websites/react/album_finder_spotify:spotify-finder:dist"
+  "F1 Strategy Simulator:/var/www/html/websites/react/f1-strategy-simulator:f1-simulator:dist"
   "Café Pâtisserie:/var/www/html/websites/react/CafePatisserieSite:cafe-patisserie:dist/public"
 )
 
@@ -171,6 +187,9 @@ for ((i=0; i<${#PROJECT_LIST[@]}; i++)); do
   [[ -z "$entry" || "${entry:0:1}" == "#" ]] && continue
   IFS=':' read -r project_name project_path remote_folder build_folder <<<"$entry"
   echo "🔄 Déploiement du projet $((i+1))/${#PROJECT_LIST[@]} : $project_name"
-  git_pull_project "$project_path"
-  deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
+  if git_pull_and_check_changes "$project_path"; then
+    deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
+  else
+    echo "⏭️  Aucun changement détecté pour $project_name, déploiement ignoré."
+  fi
 done
