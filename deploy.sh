@@ -94,16 +94,24 @@ deploy_project() {
 
     pushd "$project_path" >/dev/null || { echo "❌ Erreur: Impossible d'accéder à $project_path"; return 2; }
 
+
     echo "📦 [$project_name] Installation des dépendances..."
     npm ci --silent || npm install --silent
 
     echo "🔨 [$project_name] Build du projet..."
+    build_success=1
     if [ -f package.json ]; then
       if grep -q '"build:static"' package.json; then
-        npm run build:static --silent
+        npm run build:static --silent || build_success=0
       else
-        npm run build --silent
+        npm run build --silent || build_success=0
       fi
+    fi
+
+    if [ $build_success -eq 0 ]; then
+      echo "❌ [$project_name] Échec du build. Déploiement annulé."
+      popd >/dev/null
+      return 1
     fi
 
     # Copie .htaccess pour le routage client (Vite/SPA uniquement)
@@ -113,7 +121,7 @@ deploy_project() {
     fi
 
     if [ ! -d "$build_folder" ]; then
-      echo "❌ [$project_name] Dossier de build $build_folder introuvable"
+      echo "❌ [$project_name] Dossier de build $build_folder introuvable après build. Vérifie la configuration du build (vite.config.js ou package.json)."
       ls -la
       popd >/dev/null
       return 1
@@ -122,31 +130,36 @@ deploy_project() {
     echo "🔎 [$project_name] Vérification des fichiers de build..."
     if [ -f "$build_folder/index.html" ]; then
       echo "✅ [$project_name] index.html trouvé"
-      if grep -q "./assets/" $build_folder/index.html; then
+      if grep -q "./assets/" "$build_folder/index.html"; then
         echo "✅ [$project_name] index.html référence ./assets/"
       else
         echo "⚠️ [$project_name] index.html ne référence pas ./assets/ - inspecte $build_folder/index.html"
       fi
     else
-      echo "❌ [$project_name] index.html introuvable dans $build_folder"
+      echo "❌ [$project_name] index.html introuvable dans $build_folder après build. Vérifie la configuration du build."
       popd >/dev/null
       return 1
     fi
 
     # Vérification JS assets (Vite/SPA)
-    jsfile=$(ls $build_folder/assets/*.js 2>/dev/null | head -n1 || true)
-    if [ -z "$jsfile" ]; then
-      echo "⚠️ [$project_name] Aucun JS asset dans $build_folder/assets (normal pour CRA)"
-    else
-      echo "✅ [$project_name] JS asset trouvé : $(basename $jsfile)"
-    fi
+    jsfile=""
+    cssfile=""
+    if [ -d "$build_folder/assets" ]; then
+      jsfile=$(ls "$build_folder"/assets/*.js 2>/dev/null | head -n1 || true)
+      if [ -z "$jsfile" ]; then
+        echo "⚠️ [$project_name] Aucun JS asset dans $build_folder/assets (normal pour CRA)"
+      else
+        echo "✅ [$project_name] JS asset trouvé : $(basename $jsfile)"
+      fi
 
-    # Vérification CSS assets
-    cssfile=$(ls $build_folder/assets/*.css 2>/dev/null | head -n1 || true)
-    if [ -z "$cssfile" ]; then
-      echo "⚠️ [$project_name] Aucun CSS asset dans $build_folder/assets (normal pour CRA)"
+      cssfile=$(ls "$build_folder"/assets/*.css 2>/dev/null | head -n1 || true)
+      if [ -z "$cssfile" ]; then
+        echo "⚠️ [$project_name] Aucun CSS asset dans $build_folder/assets (normal pour CRA)"
+      else
+        echo "✅ [$project_name] CSS asset trouvé : $(basename $cssfile)"
+      fi
     else
-      echo "✅ [$project_name] CSS asset trouvé : $(basename $cssfile)"
+      echo "⚠️ [$project_name] Dossier assets absent dans $build_folder (normal pour certains projets)"
     fi
 
     echo "📤 [$project_name] Upload FTP de $build_folder vers /www/$remote_folder/ ..."
