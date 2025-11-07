@@ -44,78 +44,83 @@ echo "🔨 Building the project..."
 npm run build:static --silent
 
 
-# Copy .htaccess for client-side routing and ensure it's present
-if [ -f "client/public/.htaccess" ]; then
-  cp client/public/.htaccess "$BUILD_FOLDER/.htaccess"
-  echo "✅ .htaccess copied for client-side routing"
-fi
+    # Copy .htaccess for client-side routing and ensure it's present
+    if [ -f "client/public/.htaccess" ]; then
+      cp client/public/.htaccess "$build_folder/.htaccess"
+      echo "✅ .htaccess copied for client-side routing"
+    fi
 
-if [ ! -f "$BUILD_FOLDER/.htaccess" ]; then
-  echo "❌ .htaccess missing in $BUILD_FOLDER. SPA routing will break!"
-  exit 1
-fi
+    if [ ! -f "$build_folder/.htaccess" ]; then
+      echo "❌ .htaccess missing in $build_folder. SPA routing will break!"
+      popd >/dev/null
+      return 1
+    fi
 
-if [ ! -d "$BUILD_FOLDER" ]; then
-  echo "❌ Build folder $BUILD_FOLDER not found"
-  exit 1
-fi
+    if [ ! -d "$build_folder" ]; then
+      echo "❌ Build folder $build_folder not found"
+      ls -la
+      popd >/dev/null
+      return 1
+    fi
 
-echo "🔎 Quick verification of build files..."
-if [ -f "$BUILD_FOLDER/index.html" ]; then
-  echo "✅ index.html found"
-  if grep -q "./assets/" $BUILD_FOLDER/index.html; then
-    echo "✅ index.html references ./assets/"
-  else
-    echo "⚠️ index.html does not reference ./assets/ - inspect $BUILD_FOLDER/index.html"
-  fi
-else
-  echo "❌ index.html not found in $BUILD_FOLDER"
-  exit 1
-fi
+    echo "🔎 Quick verification of build files..."
+    if [ -f "$build_folder/index.html" ]; then
+      echo "✅ index.html found"
+      if grep -q "./assets/" $build_folder/index.html; then
+        echo "✅ index.html references ./assets/"
+      else
+        echo "⚠️ index.html does not reference ./assets/ - inspect $build_folder/index.html"
+      fi
+    else
+      echo "❌ index.html not found in $build_folder"
+      popd >/dev/null
+      return 1
+    fi
 
-# Check for JS assets
-jsfile=$(ls $BUILD_FOLDER/assets/*.js 2>/dev/null | head -n1 || true)
-if [ -z "$jsfile" ]; then
-  echo "❌ No JS asset found in $BUILD_FOLDER/assets"
-  exit 1
-else
-  echo "✅ JS assets found: $(basename $jsfile)"
-fi
+    # Check for JS assets
+    jsfile=$(ls $build_folder/assets/*.js 2>/dev/null | head -n1 || true)
+    if [ -z "$jsfile" ]; then
+      echo "❌ No JS asset found in $build_folder/assets"
+      popd >/dev/null
+      return 1
+    else
+      echo "✅ JS assets found: $(basename $jsfile)"
+    fi
 
-# Check for CSS assets
-cssfile=$(ls $BUILD_FOLDER/assets/*.css 2>/dev/null | head -n1 || true)
-if [ -z "$cssfile" ]; then
-  echo "⚠️ No CSS asset found in $BUILD_FOLDER/assets"
-else
-  echo "✅ CSS assets found: $(basename $cssfile)"
-fi
+    # Check for CSS assets
+    cssfile=$(ls $build_folder/assets/*.css 2>/dev/null | head -n1 || true)
+    if [ -z "$cssfile" ]; then
+      echo "⚠️ No CSS asset found in $build_folder/assets"
+    else
+      echo "✅ CSS assets found: $(basename $cssfile)"
+    fi
 
-echo "📤 Uploading $BUILD_FOLDER to FTP /www/$REMOTE_FOLDER/ ..."
-lftp -c "open -u '$FTP_USER','$FTP_PASS' $FTP_HOST; mkdir -p /www/$REMOTE_FOLDER; cd /www/$REMOTE_FOLDER; mirror -R --delete --verbose $BUILD_FOLDER/ .; quit"
+    echo "📤 Uploading $build_folder to FTP /www/$remote_folder/ ..."
+    lftp -c "open -u '$FTP_USER','$FTP_PASS' $FTP_HOST; mkdir -p /www/$remote_folder; cd /www/$remote_folder; mirror -R --delete --verbose $build_folder/ .; quit"
 
-echo "🧪 Testing public URL..."
-URL="https://www.ryanfonseca.fr/$REMOTE_FOLDER/"
-if curl --silent --head --fail "$URL" >/dev/null 2>&1; then
-  echo "✅ Public URL reachable: $URL"
-else
-  echo "❌ Public URL not reachable: $URL (this might be normal if the site takes time to propagate)"
-fi
+    echo "🧪 Testing public URL..."
+    URL="https://www.ryanfonseca.fr/$remote_folder/"
+    if curl --silent --head --fail "$URL" >/dev/null 2>&1; then
+      echo "✅ Public URL reachable: $URL"
+    else
+      echo "❌ Public URL not reachable: $URL (this might be normal if the site takes time to propagate)"
+    fi
 
-echo "� Asset check (public)..."
-echo "Main page headers:"
-curl -I -sS "$URL" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch main page headers"
+    echo "� Asset check (public)..."
+    echo "Main page headers:"
+    curl -I -sS "$URL" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch main page headers"
 
-if [ -n "$jsfile" ]; then
-  echo "JS asset headers:"
-  curl -I -sS "${URL}assets/$(basename $jsfile)" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch JS asset headers"
-fi
+    if [ -n "$jsfile" ]; then
+      echo "JS asset headers:"
+      curl -I -sS "${URL}assets/$(basename $jsfile)" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch JS asset headers"
+    fi
 
-if [ -n "$cssfile" ]; then
-  echo "CSS asset headers:"
-  curl -I -sS "${URL}assets/$(basename $cssfile)" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch CSS asset headers"
-fi
+    if [ -n "$cssfile" ]; then
+      echo "CSS asset headers:"
+      curl -I -sS "${URL}assets/$(basename $cssfile)" 2>/dev/null | sed -n '1,10p' || echo "Could not fetch CSS asset headers"
+    fi
 
-echo ""
-echo "✅ Café Pâtisserie deployment completed!"
-echo "🌐 Your website should be available at: $URL"
-echo "☕ Enjoy your beautiful café website!"
+    echo ""
+    echo "✅ Café Pâtisserie deployment completed!"
+    echo "🌐 Your website should be available at: $URL"
+    echo "☕ Enjoy your beautiful café website!"
