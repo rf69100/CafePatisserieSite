@@ -16,12 +16,12 @@ import NotFound from "@/pages/not-found";
 function AppRouter() {
   return (
     <Switch>
-      <Route path="/cafe-patisserie/" component={Home} />
-      <Route path="/cafe-patisserie/produits" component={Products} />
-      <Route path="/cafe-patisserie/a-propos" component={About} />
-      <Route path="/cafe-patisserie/contact" component={Contact} />
-      <Route path="/cafe-patisserie/legal" component={Legal} />
-      <Route path="/cafe-patisserie/privacy" component={Privacy} />
+      <Route path="/" component={Home} />
+      <Route path="/produits" component={Products} />
+      <Route path="/a-propos" component={About} />
+      <Route path="/contact" component={Contact} />
+      <Route path="/legal" component={Legal} />
+      <Route path="/privacy" component={Privacy} />
       <Route component={NotFound} />
     </Switch>
   );
