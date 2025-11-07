@@ -20,21 +20,21 @@ export function Footer() {
             <h3 className="font-semibold text-lg">Liens Rapides</h3>
             <nav className="flex flex-col gap-2">
               <Link 
-                href="/cafe-patisserie/produits" 
+                href="/produits" 
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors" 
                 data-testid="link-footer-produits"
               >
                 Produits
               </Link>
               <Link 
-                href="/cafe-patisserie/a-propos" 
+                href="/a-propos" 
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors" 
                 data-testid="link-footer-apropos"
               >
                 À Propos
               </Link>
               <Link 
-                href="/cafe-patisserie/contact" 
+                href="/contact" 
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors" 
                 data-testid="link-footer-contact"
               >
@@ -76,10 +76,10 @@ export function Footer() {
               © 2024 Café & Délices. Tous droits réservés.
             </p>
               <div className="flex gap-6">
-                <Link href="/cafe-patisserie/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Mentions Légales
                 </Link>
-                <Link href="/cafe-patisserie/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Politique de Confidentialité
                 </Link>
             </div>
