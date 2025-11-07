@@ -132,10 +132,12 @@ deploy_project() {
     return 0
 }
 
-# Loop over PROJECT_LIST and deploy
-for entry in "${PROJECT_LIST[@]}"; do
+# Loop over PROJECT_LIST and deploy in order
+for ((i=0; i<${#PROJECT_LIST[@]}; i++)); do
+  entry="${PROJECT_LIST[$i]}"
   # Skip commented or empty lines
   [[ -z "$entry" || "${entry:0:1}" == "#" ]] && continue
   IFS=':' read -r project_name project_path remote_folder build_folder <<<"$entry"
+  echo "🔄 Déploiement du projet $((i+1))/${#PROJECT_LIST[@]} : $project_name"
   deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
 done
