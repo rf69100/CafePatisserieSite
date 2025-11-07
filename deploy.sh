@@ -18,7 +18,6 @@ if [ -f ".deploy.env" ]; then
 fi
 
 PROJECT_LIST=(
-  "DisplayName:local_path:remote_folder:build_folder"
   "Portfolio:/var/www/html/websites/react/mon-portfolio::build"
   "Café Pâtisserie:/var/www/html/websites/react/CafePatisserieSite:cafe-patisserie:dist/public"
   # "NBA Dashboard:/var/www/html/websites/react/nba-dashbord:nba_dashboard:nba_dashboard"
@@ -134,7 +133,9 @@ deploy_project() {
 }
 
 # Loop over PROJECT_LIST and deploy
-for entry in "${PROJECT_LIST[@]:1}"; do
-    IFS=':' read -r project_name project_path remote_folder build_folder <<<"$entry"
-    deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
+for entry in "${PROJECT_LIST[@]}"; do
+  # Skip commented or empty lines
+  [[ -z "$entry" || "${entry:0:1}" == "#" ]] && continue
+  IFS=':' read -r project_name project_path remote_folder build_folder <<<"$entry"
+  deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
 done
