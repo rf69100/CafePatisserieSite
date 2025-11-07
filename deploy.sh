@@ -199,15 +199,35 @@ deploy_project() {
 declare -A DEPLOY_RESULTS
 
 
+
 for ((i=0; i<${#PROJECT_LIST[@]}; i++)); do
   entry="${PROJECT_LIST[$i]}"
   [[ -z "$entry" || "${entry:0:1}" == "#" ]] && continue
   IFS=':' read -r project_name project_path remote_folder build_folder <<<"$entry"
   echo "🔄 Déploiement du projet $((i+1))/${#PROJECT_LIST[@]} : $project_name"
-  git_pull_project "$project_path"
-  deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
 
-  # Test de l'URL publique après déploiement
+  # Vérifie si le repo a des modifications locales ou distantes
+  branch_name=""
+  ahead=0
+  behind=0
+  if [ -d "$project_path/.git" ]; then
+    pushd "$project_path" >/dev/null
+    git fetch origin
+    branch_name=$(git rev-parse --abbrev-ref HEAD)
+    ahead=$(git rev-list --count HEAD ^origin/$branch_name)
+    behind=$(git rev-list --count origin/$branch_name ^HEAD)
+    popd >/dev/null
+  fi
+
+  if [ "$ahead" -gt 0 ] || [ "$behind" -gt 0 ]; then
+    echo "🟢 Modifications détectées pour $project_name, déploiement en cours."
+    git_pull_project "$project_path"
+    deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
+  else
+    echo "⏭️  Aucun changement détecté pour $project_name, déploiement ignoré."
+  fi
+
+  # Test de l'URL publique après déploiement ou non
   URL="https://www.ryanfonseca.fr/$remote_folder/"
   http_code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
   if [ "$http_code" = "200" ]; then
