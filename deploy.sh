@@ -19,9 +19,8 @@ fi
 
 PROJECT_LIST=(
   "DisplayName:local_path:remote_folder:build_folder"
-  # Only deploy CafePatisserieSite for now
+  "Portfolio:/var/www/html/websites/react/mon-portfolio::build"
   "Café Pâtisserie:/var/www/html/websites/react/CafePatisserieSite:cafe-patisserie:dist/public"
-  # "Portfolio:/var/www/html/websites/react/mon-portfolio::build"
   # "NBA Dashboard:/var/www/html/websites/react/nba-dashbord:nba_dashboard:nba_dashboard"
   # "Spotify Album Finder:/var/www/html/websites/react/album_finder_spotify:spotify-finder:dist"
   # "F1 Strategy Simulator:/var/www/html/websites/react/f1-strategy-simulator:f1-simulator:dist"
