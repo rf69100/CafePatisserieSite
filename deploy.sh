@@ -194,9 +194,12 @@ deploy_project() {
 }
 
 # Loop over PROJECT_LIST and deploy in order
+
+# Tableau pour stocker les résultats de test d'URL
+declare -A DEPLOY_RESULTS
+
 for ((i=0; i<${#PROJECT_LIST[@]}; i++)); do
   entry="${PROJECT_LIST[$i]}"
-  # Skip commented or empty lines
   [[ -z "$entry" || "${entry:0:1}" == "#" ]] && continue
   IFS=':' read -r project_name project_path remote_folder build_folder <<<"$entry"
   echo "🔄 Déploiement du projet $((i+1))/${#PROJECT_LIST[@]} : $project_name"
@@ -205,4 +208,21 @@ for ((i=0; i<${#PROJECT_LIST[@]}; i++)); do
   else
     echo "⏭️  Aucun changement détecté pour $project_name, déploiement ignoré."
   fi
+
+  # Test de l'URL publique après déploiement
+  URL="https://www.ryanfonseca.fr/$remote_folder/"
+  http_code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+  if [ "$http_code" = "200" ]; then
+    DEPLOY_RESULTS["$project_name"]="✅ Accessible ($URL)"
+  else
+    DEPLOY_RESULTS["$project_name"]="❌ Erreur $http_code ($URL)"
+  fi
 done
+
+# Résumé final
+echo "\n=============================="
+echo "🧪 Récapitulatif accessibilité des projets :"
+for project in "${!DEPLOY_RESULTS[@]}"; do
+  echo "- $project : ${DEPLOY_RESULTS[$project]}"
+done
+echo "==============================\n"
