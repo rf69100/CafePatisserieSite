@@ -17,9 +17,9 @@ set -euo pipefail
 THIS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "$THIS_DIR"
 
-FTP_USER="${FTP_USER-ryanfoc}"
-FTP_PASS="${FTP_PASS-Bpi14580911}"
-FTP_HOST="${FTP_HOST-ryanfoc.cluster021.hosting.ovh.net}"
+FTP_USER="ryanfoc"
+FTP_PASS="Bpi14580911"
+FTP_HOST="${FTP_HOST-ftp.cluster021.hosting.ovh.net}"
 
 
 
