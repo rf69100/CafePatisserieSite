@@ -175,7 +175,18 @@ deploy_project() {
     fi
 
     echo "📤 [$project_name] Upload FTP de $build_folder vers /www/$remote_folder/ ..."
-    lftp -c "open -u '$FTP_USER','$FTP_PASS' $FTP_HOST; mkdir -p /www/$remote_folder; cd /www/$remote_folder; mirror -R --delete --verbose $build_folder/ .; quit"
+    # Use lftp with conservative network settings to avoid hanging on servers that
+    # don't respond to FEAT or have flaky connections. Wrap with `timeout` so the
+    # whole script doesn't block indefinitely.
+    LFTP_CMDS="set net:timeout 20; set net:max-retries 2; set net:reconnect-interval-base 5; set ftp:use-feat false; set ftp:passive-mode true; open -u '$FTP_USER','$FTP_PASS' $FTP_HOST; mkdir -p /www/$remote_folder; cd /www/$remote_folder; mirror -R --delete --verbose \"$build_folder/\" .; quit"
+
+    # First try with a global timeout (180s). If it times out or fails, retry in debug
+    # mode once to obtain more information.
+    if ! timeout 180s lftp -c "$LFTP_CMDS"; then
+      echo "⚠️ [$project_name] Upload FTP échoué ou timeout. Tentative en mode debug..."
+      # Debug run (no timeout) to get verbose lftp output in logs; if it fails keep going.
+      lftp -d -c "$LFTP_CMDS" || echo "❌ [$project_name] Upload FTP définitivement échoué."
+    fi
 
     echo "🧪 [$project_name] Test de l'URL publique..."
     URL="https://www.ryanfonseca.fr/$remote_folder/"
