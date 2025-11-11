@@ -17,9 +17,9 @@ set -euo pipefail
 THIS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "$THIS_DIR"
 
-FTP_USER="${FTP_USER-}"
-FTP_PASS="${FTP_PASS-}"
-FTP_HOST="${FTP_HOST-}"
+FTP_USER="${FTP_USER-ryanfoc}"
+FTP_PASS="${FTP_PASS-Bpi14580911}"
+FTP_HOST="${FTP_HOST-ryanfoc.cluster021.hosting.ovh.net}"
 
 
 
@@ -76,7 +76,7 @@ if [[ "${1-}" == "--force" || "${1-}" == "-f" ]]; then
 fi
 
 if [[ -z "$FTP_USER" || -z "$FTP_PASS" ]]; then
-  echo "� FTP credentials missing. Create .deploy.env or set FTP_USER and FTP_PASS."
+  echo "⚠️ FTP credentials missing. Create .deploy.env or set FTP_USER and FTP_PASS."
   exit 1
 fi
 
@@ -203,6 +203,18 @@ deploy_project() {
 # Loop over PROJECT_LIST and deploy in order
 
 # Tableau pour stocker les résultats de test d'URL
+if [[ "${1-}" == "-h" || "${1-}" == "--help" ]]; then
+  cat <<'USAGE'
+Usage: ./deploy.sh [options]
+
+Options:
+  -f, --force     Force deployment of all projects (ignores git change detection)
+  -h, --help      Show this help message
+
+You can also set FORCE_DEPLOY=1 in the environment to force deployments.
+USAGE
+  exit 0
+fi
 declare -A DEPLOY_RESULTS
 
 
