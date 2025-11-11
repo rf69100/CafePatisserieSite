@@ -68,6 +68,13 @@ PROJECT_LIST=(
   "Café Pâtisserie:/var/www/html/websites/react/CafePatisserieSite:cafe-patisserie:dist/public"
 )
 
+# Option to force deployment of all projects.
+# Can be set via environment variable FORCE_DEPLOY=1 or by passing --force / -f as first argument.
+FORCE_DEPLOY="${FORCE_DEPLOY-0}"
+if [[ "${1-}" == "--force" || "${1-}" == "-f" ]]; then
+  FORCE_DEPLOY=1
+fi
+
 if [[ -z "$FTP_USER" || -z "$FTP_PASS" ]]; then
   echo "� FTP credentials missing. Create .deploy.env or set FTP_USER and FTP_PASS."
   exit 1
@@ -219,8 +226,12 @@ for ((i=0; i<${#PROJECT_LIST[@]}; i++)); do
     popd >/dev/null
   fi
 
-  if [ "$ahead" -gt 0 ] || [ "$behind" -gt 0 ]; then
-    echo "🟢 Modifications détectées pour $project_name, déploiement en cours."
+  if [ "$FORCE_DEPLOY" -eq 1 ] || [ "$ahead" -gt 0 ] || [ "$behind" -gt 0 ]; then
+    if [ "$FORCE_DEPLOY" -eq 1 ]; then
+      echo "� Forçage du déploiement pour $project_name (FORCE_DEPLOY=1)"
+    else
+      echo "�🟢 Modifications détectées pour $project_name, déploiement en cours."
+    fi
     git_pull_project "$project_path"
     deploy_project "$project_name" "$project_path" "$remote_folder" "$build_folder"
   else
