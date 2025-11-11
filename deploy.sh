@@ -70,9 +70,14 @@ PROJECT_LIST=(
 
 # Option to force deployment of all projects.
 # Can be set via environment variable FORCE_DEPLOY=1 or by passing --force / -f as first argument.
-FORCE_DEPLOY="${FORCE_DEPLOY-0}"
+## By default we force deployment of all projects to avoid skipped deploys.
+## Set FORCE_DEPLOY=0 in the environment or pass --no-force to disable.
+FORCE_DEPLOY="${FORCE_DEPLOY-1}"
 if [[ "${1-}" == "--force" || "${1-}" == "-f" ]]; then
   FORCE_DEPLOY=1
+fi
+if [[ "${1-}" == "--no-force" ]]; then
+  FORCE_DEPLOY=0
 fi
 
 if [[ -z "$FTP_USER" || -z "$FTP_PASS" ]]; then
